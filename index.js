@@ -13,11 +13,11 @@ let persons = [
     { name: 'Mary Poppendieck', number: '39-23-6423122',id:4 }
 ]
 
-morgan.token('bodyd', (req,res)=>{
+morgan.token('bodydata', (req,res)=>{
     return JSON.stringify(req.body);
 })
 
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :bodyd'));
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :bodydata'));
 
 app.get('/api/persons',
             (request,response)=>{
