@@ -52,10 +52,10 @@ app.get('/info',
 })
 
 app.delete('/api/persons/:id',(req,resp)=>{
-    const id = Number(request.params.id);
+    const id = Number(req.params.id);
     persons = persons.filter(p=>p.id !==id);
     console.log( persons.filter(p=>p.id !==id));
-    response.status(204).end();
+    resp.status(204).end();
 })
 const generateId = ()=>{
     return Math.floor(Math.random() * 10000);
