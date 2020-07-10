@@ -4,6 +4,7 @@ const { response } = require('express');
 const cors  = require('cors');
 const app = express();
 var morgan = require('morgan');
+app.use(express.static('build'));
 
 let persons = [
     { name: 'Arto Hellas', number: '040-123456', id:1},
