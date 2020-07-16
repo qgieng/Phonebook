@@ -1,17 +1,11 @@
+require('dotenv').config();
 const http = require('http');
 const express = require('express');
 const { response } = require('express');
 const cors  = require('cors');
 const app = express();
 var morgan = require('morgan');
-
-
-let persons = [
-    { name: 'Arto Hellas', number: '040-123456', id:1},
-    { name: 'Ada Lovelace', number: '39-44-5323523',id:2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id:3},
-    { name: 'Mary Poppendieck', number: '39-23-6423122',id:4 }
-]
+const Person = require('./models/person');
 
 morgan.token('bodydata', (req,res)=>{
     return JSON.stringify(req.body);
@@ -23,9 +17,13 @@ app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :bodydata'));
 app.use(express.static('build'));
 
+
+
 app.get('/api/persons',
-            (request,response)=>{
-        response.json(persons);
+                        (request,response)=>{
+    Person.find({}).then(persons=>{
+        response.json(persons)
+    })
 })
 
 app.get('/api/persons/:id',
@@ -79,25 +77,29 @@ app.post('/api/persons', (req, res)=>{
             });
         }
     }
-    const found = persons.find(person=>person.name === body.name);
+    /*
+    const found = Person.find({name:body.name}).then(foundPerson=>{
+        console.log('found')
+        console.log(foundPerson);
+    })
     if(found !== undefined){
         return res.status(400).json({
             error:'name must be unique'
         });
-    }
+    }*/
 
-    const newPerson = {
+    const newPerson = new Person({
         name: body.name,
         number: body.number,
         id: generateId()
-    };
+    });
 
-    persons = persons.concat(newPerson);
+    newPerson.save().then(person=>{
+        res.json(person);
+    })
 
-    res.json(newPerson);
+    
 })
-
-
 
 const PORT = process.env.PORT||3001;
 console.log()
