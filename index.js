@@ -6,6 +6,7 @@ const cors  = require('cors');
 const app = express();
 var morgan = require('morgan');
 const Person = require('./models/person');
+const { findByIdAndRemove } = require('./models/person');
 
 
 morgan.token('bodydata', (req,res)=>{
@@ -80,9 +81,9 @@ app.put('/api/persons/:id',(request, response,next)=>{
     .catch(error=>next(error));
 })
 
-app.post('/api/persons', (req, res)=>{
+app.post('/api/persons', (req, res,next)=>{
     const body = req.body;
-    
+    /*
     if(!body.name || !body.number){
 
         if(!body.name){
@@ -98,7 +99,7 @@ app.post('/api/persons', (req, res)=>{
             });
         }
     }
-    /*
+    
     const found = Person.find({name:body.name}).then(foundPerson=>{
         console.log('found')
         console.log(foundPerson);
@@ -117,7 +118,8 @@ app.post('/api/persons', (req, res)=>{
 
     newPerson.save().then(person=>{
         res.json(person);
-    })
+    }).catch(error=>{
+        next(error)})
 
     
 })
@@ -130,10 +132,13 @@ const unknownEndpoint = (request, response) => {
 
 const errorHandler = (error, request, response, next) => {
     console.error(error.message)
-  
     if (error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
-    } 
+    }else if(error.name === 'ValidationError'){
+        return response.status(404).send({
+            error:error.message;
+        })
+    }
   
     next(error)
   }
