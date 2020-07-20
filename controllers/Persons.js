@@ -1,4 +1,5 @@
 const Person = require('../models/person');
+const logger = require('../utils/logger');
 const personRouter = require('express').Router();
 
 personRouter.get('/api/persons',
@@ -35,6 +36,7 @@ personRouter.get('/info',
 personRouter.delete('/api/persons/:id',(req,resp,next) => {
   Person.findByIdAndRemove(req.params.id)
     .then(result => {
+      logger.info(result);
       resp.status(204).end();
     })
     .catch(error => {
